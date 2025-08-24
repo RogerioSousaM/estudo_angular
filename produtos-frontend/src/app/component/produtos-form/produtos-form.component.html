@@ -1,13 +1,13 @@
 <div class="form-container">
     <!-- Cabeçalho -->
     <div class="header">
-      <h1>{{ editando ? '✏️ Editar Produto' : '➕ Novo Produto' }}</h1>
+      <h1>{{ editando ? 'Editar Produto' : 'Novo Produto' }}</h1>
       <div class="header-actions">
         <button class="btn btn-secondary" (click)="voltarParaDashboard()">
           Dashboard
         </button>
         <button class="btn btn-secondary" (click)="cancelar()">
-          ❌ Cancelar
+          Cancelar
         </button>
       </div>
     </div>
@@ -18,7 +18,7 @@
     </div>
   
     <div *ngIf="erro" class="status-message error">
-      <p>❌ {{ erro }}</p>
+      <p>{{ erro }}</p>
     </div>
   
     <!-- Formulário -->
@@ -104,21 +104,11 @@
   
       <!-- Botões de Ação -->
       <div class="form-actions">
-        <button 
-          type="submit" 
-          class="btn btn-primary"
-          [disabled]="carregando || produtoForm.invalid"
-        >
-          {{ editando ? 'Atualizar Produto' : '➕ Criar Produto' }}
+        <button type="submit" class="btn btn-primary" [disabled]="produtoForm.invalid || carregando">
+          {{ editando ? 'Atualizar' : 'Cadastrar' }}
         </button>
-        
-        <button 
-          type="button" 
-          class="btn btn-secondary"
-          (click)="cancelar()"
-          [disabled]="carregando"
-        >
-          ❌ Cancelar
+        <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="carregando">
+          Cancelar
         </button>
       </div>
     </form>

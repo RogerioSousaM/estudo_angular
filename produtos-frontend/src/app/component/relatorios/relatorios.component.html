@@ -1,0 +1,130 @@
+<div class="relatorios-container">
+  <!-- Cabeçalho -->
+  <div class="header">
+    <h1>Relatórios do Sistema</h1>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="voltarParaDashboard()">
+        ← Voltar ao Dashboard
+      </button>
+    </div>
+  </div>
+
+  <!-- Mensagens de Status -->
+  <div *ngIf="carregando" class="status-message loading">
+    <p>Carregando relatórios...</p>
+  </div>
+
+  <div *ngIf="erro" class="status-message error">
+    <p>{{ erro }}</p>
+  </div>
+
+  <!-- Conteúdo dos Relatórios -->
+  <div *ngIf="!carregando && !erro" class="relatorios-content">
+    
+    <!-- Resumo Geral -->
+    <div class="relatorio-card resumo-geral">
+      <h2>Resumo Geral</h2>
+      <div class="stats-grid" *ngIf="resumoGeral">
+        <div class="stat-item">
+          <div class="stat-value">{{ formatarNumero(resumoGeral.totalProdutos) }}</div>
+          <div class="stat-label">Total de Produtos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ formatarNumero(resumoGeral.produtosAtivos) }}</div>
+          <div class="stat-label">Produtos Ativos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ formatarNumero(resumoGeral.produtosInativos) }}</div>
+          <div class="stat-label">Produtos Inativos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ formatarNumero(resumoGeral.totalEstoque) }}</div>
+          <div class="stat-label">Total em Estoque</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ formatarMoeda(resumoGeral.valorTotalEstoque) }}</div>
+          <div class="stat-label">Valor Total</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ formatarPercentual(resumoGeral.percentualAtivos) }}</div>
+          <div class="stat-label">% Ativos</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estoque Baixo -->
+    <div class="relatorio-card estoque-baixo">
+      <h2>Alerta de Estoque</h2>
+      <div *ngIf="estoqueBaixo">
+        <div class="alert-header">
+          <span class="alert-count">{{ formatarNumero(estoqueBaixo.quantidade) }}</span>
+          <span class="alert-text">produtos com estoque baixo</span>
+        </div>
+        <div class="produtos-alerta" *ngIf="estoqueBaixo.produtos && estoqueBaixo.produtos.length > 0">
+          <div class="produto-alerta" *ngFor="let produto of estoqueBaixo.produtos">
+            <span class="produto-nome">{{ produto.nome }}</span>
+            <span class="produto-estoque">{{ formatarNumero(produto.estoque) }}</span>
+            <span class="produto-status" [class]="produto.status === 'SEM ESTOQUE' ? 'sem-estoque' : 'estoque-baixo'">
+              {{ produto.status }}
+            </span>
+          </div>
+        </div>
+        <div *ngIf="!estoqueBaixo.produtos || estoqueBaixo.produtos.length === 0" class="sem-alertas">
+          <p>Todos os produtos estão com estoque adequado!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Produtos por Preço -->
+    <div class="relatorio-card produtos-preco">
+      <h2>Análise de Preços</h2>
+      <div *ngIf="produtosPorPreco" class="preco-stats">
+        <div class="preco-item">
+          <h3>Mais Caro</h3>
+          <div *ngIf="produtosPorPreco.maisCaro" class="produto-destaque">
+            <div class="produto-nome">{{ produtosPorPreco.maisCaro.nome }}</div>
+            <div class="produto-preco">{{ formatarMoeda(produtosPorPreco.maisCaro.preco) }}</div>
+          </div>
+          <div *ngIf="!produtosPorPreco.maisCaro" class="sem-dados">
+            Nenhum produto cadastrado
+          </div>
+        </div>
+        <div class="preco-item">
+          <h3>Mais Barato</h3>
+          <div *ngIf="produtosPorPreco.maisBarato" class="produto-destaque">
+            <div class="produto-nome">{{ produtosPorPreco.maisBarato.nome }}</div>
+            <div class="produto-preco">{{ formatarMoeda(produtosPorPreco.maisBarato.preco) }}</div>
+          </div>
+          <div *ngIf="!produtosPorPreco.maisBarato" class="sem-dados">
+            Nenhum produto cadastrado
+          </div>
+        </div>
+        <div class="preco-item">
+          <h3>Preço Médio</h3>
+          <div class="preco-medio">
+            {{ formatarMoeda(produtosPorPreco.mediaPrecos) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estatísticas Temporais -->
+    <div class="relatorio-card estatisticas-tempo">
+      <h2>Análise Temporal</h2>
+      <div *ngIf="estatisticasTemporais" class="tempo-stats">
+        <div class="tempo-item">
+          <div class="tempo-value">{{ formatarNumero(estatisticasTemporais.produtosUltimoMes) }}</div>
+          <div class="tempo-label">Produtos criados no último mês</div>
+        </div>
+        <div class="tempo-item">
+          <div class="tempo-value">{{ formatarNumero(estatisticasTemporais.produtosUltimaSemana) }}</div>
+          <div class="tempo-label">Produtos criados na última semana</div>
+        </div>
+        <div class="tempo-periodo" *ngIf="estatisticasTemporais.periodoAnalise">
+          <small>Período: {{ estatisticasTemporais.periodoAnalise.inicio }} a {{ estatisticasTemporais.periodoAnalise.fim }}</small>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,25 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProdutosModule } from './produtos/produtos.module';
+import { RelatoriosModule } from './relatorios/relatorios.module';
+import { AppDataSource } from './config/typeorm.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mssql',
-      host: 'localhost',
-      username: 'user', 
-      password: '123',
-      database: 'Loja',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-      options: {
-        encrypt: false,
-        trustServerCertificate: true,
-        // IMPORTANTE: Nome da instância
-        instanceName: 'SQLEXPRESS01',
-      },
-    }),
+    TypeOrmModule.forRoot(AppDataSource.options),
     ProdutosModule,
+    RelatoriosModule,
   ],
 })
 export class AppModule {}

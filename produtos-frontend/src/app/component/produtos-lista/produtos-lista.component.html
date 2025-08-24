@@ -1,24 +1,24 @@
 <div class="lista-container">
     <!-- Cabeçalho -->
     <div class="header">
-      <h1>📋 Lista de Produtos</h1>
+      <h1>Lista de Produtos</h1>
       <div class="header-actions">
         <button class="btn btn-primary" (click)="novoProduto()">
-          ➕ Novo Produto
+          Novo Produto
         </button>
         <button class="btn btn-secondary" (click)="voltarParaDashboard()">
-          �� Dashboard
+          Dashboard
         </button>
       </div>
     </div>
   
     <!-- Mensagens de Status -->
     <div *ngIf="carregando" class="status-message loading">
-      <p>🔄 Carregando produtos...</p>
+      <p>Carregando produtos...</p>
     </div>
   
     <div *ngIf="erro" class="status-message error">
-      <p>❌ {{ erro }}</p>
+      <p>{{ erro }}</p>
     </div>
   
     <!-- Tabela de Produtos -->
@@ -39,10 +39,10 @@
             <td>{{ produto.preco | currency:'BRL' }}</td>
             <td class="acoes">
               <button class="btn btn-edit" (click)="editarProduto(produto.id!)">
-                ✏️ Editar
+                Editar
               </button>
               <button class="btn btn-delete" (click)="deletarProduto(produto.id!)">
-                🗑️ Deletar
+                Deletar
               </button>
             </td>
           </tr>
@@ -51,9 +51,9 @@
   
       <!-- Mensagem quando não há produtos -->
       <div *ngIf="produtos.length === 0" class="no-products">
-        <p>�� Nenhum produto cadastrado ainda.</p>
+        <p>Nenhum produto cadastrado ainda.</p>
         <button class="btn btn-primary" (click)="novoProduto()">
-          ➕ Cadastrar Primeiro Produto
+          Cadastrar Primeiro Produto
         </button>
       </div>
     </div>
