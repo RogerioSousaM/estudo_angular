@@ -1,0 +1,138 @@
+.lista-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+  
+  .header h1 {
+    margin: 0;
+    font-size: 2rem;
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary {
+    background: #28a745;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background: #218838;
+    transform: translateY(-2px);
+  }
+  
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+  }
+  
+  .btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+  }
+  
+  .btn-edit {
+    background: #ffc107;
+    color: #212529;
+    margin-right: 5px;
+  }
+  
+  .btn-edit:hover {
+    background: #e0a800;
+  }
+  
+  .btn-delete {
+    background: #dc3545;
+    color: white;
+  }
+  
+  .btn-delete:hover {
+    background: #c82333;
+  }
+  
+  .status-message {
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  .loading {
+    background: #e3f2fd;
+    color: #1976d2;
+  }
+  
+  .error {
+    background: #ffebee;
+    color: #c62828;
+  }
+  
+  .table-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  
+  .produtos-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .produtos-table th,
+  .produtos-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .produtos-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .produtos-table tr:hover {
+    background: #f8f9fa;
+  }
+  
+  .acoes {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .no-products {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+  }
+  
+  .no-products p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }

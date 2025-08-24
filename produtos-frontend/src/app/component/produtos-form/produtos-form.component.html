@@ -1,0 +1,125 @@
+<div class="form-container">
+    <!-- Cabeçalho -->
+    <div class="header">
+      <h1>{{ editando ? '✏️ Editar Produto' : '➕ Novo Produto' }}</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="voltarParaDashboard()">
+          Dashboard
+        </button>
+        <button class="btn btn-secondary" (click)="cancelar()">
+          ❌ Cancelar
+        </button>
+      </div>
+    </div>
+  
+    <!-- Mensagens de Status -->
+    <div *ngIf="carregando" class="status-message loading">
+      <p> {{ editando ? 'Carregando produto...' : 'Salvando produto...' }}</p>
+    </div>
+  
+    <div *ngIf="erro" class="status-message error">
+      <p>❌ {{ erro }}</p>
+    </div>
+  
+    <!-- Formulário -->
+    <form [formGroup]="produtoForm" (ngSubmit)="onSubmit()" class="produto-form">
+      <div class="form-row">
+        <!-- Nome -->
+        <div class="form-group">
+          <label for="nome">Nome do Produto *</label>
+          <input 
+            type="text" 
+            id="nome" 
+            formControlName="nome"
+            placeholder="Digite o nome do produto"
+            [class.invalid]="nome?.invalid && nome?.touched"
+          >
+          <div *ngIf="nome?.invalid && nome?.touched" class="error-message">
+            <span *ngIf="nome?.errors?.['required']">Nome é obrigatório</span>
+            <span *ngIf="nome?.errors?.['maxlength']">Nome deve ter no máximo 100 caracteres</span>
+          </div>
+        </div>
+  
+        <!-- Preço -->
+        <div class="form-group">
+          <label for="preco">Preço *</label>
+          <input 
+            type="number" 
+            id="preco" 
+            formControlName="preco"
+            placeholder="0.00"
+            step="0.01"
+            min="0"
+            [class.invalid]="preco?.invalid && preco?.touched"
+          >
+          <div *ngIf="preco?.invalid && preco?.touched" class="error-message">
+            <span *ngIf="preco?.errors?.['required']">Preço é obrigatório</span>
+            <span *ngIf="preco?.errors?.['min']">Preço deve ser maior que zero</span>
+          </div>
+        </div>
+      </div>
+  
+      <div class="form-row">
+        <!-- Estoque -->
+        <div class="form-group">
+          <label for="estoque">Estoque *</label>
+          <input 
+            type="number" 
+            id="estoque" 
+            formControlName="estoque"
+            placeholder="0"
+            min="0"
+            [class.invalid]="estoque?.invalid && estoque?.touched"
+          >
+          <div *ngIf="estoque?.invalid && estoque?.touched" class="error-message">
+            <span *ngIf="estoque?.errors?.['required']">Estoque é obrigatório</span>
+            <span *ngIf="estoque?.errors?.['min']">Estoque deve ser maior ou igual a zero</span>
+          </div>
+        </div>
+  
+        <!-- Ativo -->
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="ativo">
+            <span class="checkmark"></span>
+            Produto Ativo
+          </label>
+        </div>
+      </div>
+  
+      <!-- Descrição -->
+      <div class="form-group">
+        <label for="descricao">Descrição</label>
+        <textarea 
+          id="descricao" 
+          formControlName="descricao"
+          placeholder="Digite uma descrição para o produto (opcional)"
+          rows="4"
+          [class.invalid]="descricao?.invalid && descricao?.touched"
+        ></textarea>
+        <div *ngIf="descricao?.invalid && descricao?.touched" class="error-message">
+          <span *ngIf="descricao?.errors?.['maxlength']">Descrição deve ter no máximo 500 caracteres</span>
+        </div>
+      </div>
+  
+      <!-- Botões de Ação -->
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="carregando || produtoForm.invalid"
+        >
+          {{ editando ? 'Atualizar Produto' : '➕ Criar Produto' }}
+        </button>
+        
+        <button 
+          type="button" 
+          class="btn btn-secondary"
+          (click)="cancelar()"
+          [disabled]="carregando"
+        >
+          ❌ Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
