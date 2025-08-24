@@ -1,5 +1,19 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, ParseIntPipe } from '@nestjs/common';
+import { 
+  Controller, 
+  Get, 
+  Post, 
+  Put, 
+  Delete, 
+  Param, 
+  Body, 
+  ParseIntPipe,
+  HttpCode,
+  HttpStatus,
+  ValidationPipe
+} from '@nestjs/common';
 import { ProdutosService } from './produtos.service';
+import { CreateProdutoDto } from './dto/create-produto.dto';
+import { UpdateProdutoDto } from './dto/update-produto.dto';
 
 @Controller('produtos')
 export class ProdutosController {
@@ -7,35 +21,42 @@ export class ProdutosController {
 
   // GET /produtos
   @Get()
-  findAll() {
-    return this.produtosService.findAll();
+  async findAll() {
+    return await this.produtosService.findAll();
+  }
+
+  // GET /produtos/ativos
+  @Get('ativos')
+  async findAtivos() {
+    return await this.produtosService.findAtivos();
   }
 
   // GET /produtos/:id
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.produtosService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.produtosService.findOne(id);
   }
 
   // POST /produtos
   @Post()
-  create(@Body('nome') nome: string, @Body('preco') preco: number) {
-    return this.produtosService.create(nome, preco);
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body(ValidationPipe) createProdutoDto: CreateProdutoDto) {
+    return await this.produtosService.create(createProdutoDto);
   }
 
   // PUT /produtos/:id
   @Put(':id')
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body('nome') nome: string,
-    @Body('preco') preco: number,
+    @Body(ValidationPipe) updateProdutoDto: UpdateProdutoDto,
   ) {
-    return this.produtosService.update(id, nome, preco);
+    return await this.produtosService.update(id, updateProdutoDto);
   }
 
   // DELETE /produtos/:id
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.produtosService.remove(id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.produtosService.remove(id);
   }
 }
