@@ -25,7 +25,71 @@
     </div>
   
     <div class="quick-stats">
-      <h2>Estatísticas Rápidas</h2>
-      <p>Em breve: contadores de produtos, estoque baixo, etc.</p>
+      <div class="stats-header">
+        <h2>Estatísticas Rápidas</h2>
+        <button class="btn btn-refresh" (click)="atualizarEstatisticas()" [disabled]="carregando">
+          {{ carregando ? 'Carregando...' : 'Atualizar' }}
+        </button>
+      </div>
+      
+      <div *ngIf="carregando" class="loading-stats">
+        <p>Carregando estatísticas...</p>
+      </div>
+      
+      <div *ngIf="!carregando" class="stats-grid">
+        <div class="stat-card total">
+          <div class="stat-icon"></div>
+          <div class="stat-content">
+            <div class="stat-value">{{ totalProdutos }}</div>
+            <div class="stat-label">Total de Produtos</div>
+          </div>
+        </div>
+        
+        <div class="stat-card ativos">
+          <div class="stat-icon"></div>
+          <div class="stat-content">
+            <div class="stat-value">{{ produtosAtivos }}</div>
+            <div class="stat-label">Produtos Ativos</div>
+          </div>
+        </div>
+        
+        <div class="stat-card inativos">
+          <div class="stat-icon"></div>
+          <div class="stat-content">
+            <div class="stat-value">{{ produtosInativos }}</div>
+            <div class="stat-label">Produtos Inativos</div>
+          </div>
+        </div>
+        
+        <div class="stat-card percentual">
+          <div class="stat-icon"></div>
+          <div class="stat-content">
+            <div class="stat-value">{{ percentualAtivos }}</div>
+            <div class="stat-label">% Ativos</div>
+          </div>
+        </div>
+        
+        <div class="stat-card estoque" [class.alert]="temEstoqueBaixo">
+          <div class="stat-icon"></div>
+          <div class="stat-content">
+            <div class="stat-value">{{ estoqueBaixo }}</div>
+            <div class="stat-label">{{ temEstoqueBaixo ? 'Estoque Baixo' : 'Estoque OK' }}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="!temProdutos && !carregando" class="no-stats">
+        <p>Nenhum produto cadastrado ainda. Comece cadastrando seu primeiro produto!</p>
+        <button class="btn btn-primary" (click)="irParaNovoProduto()">
+          Cadastrar Primeiro Produto
+        </button>
+      </div>
+      
+      <div *ngIf="temEstoqueBaixo && !carregando" class="estoque-alert">
+        <p><strong>Atenção:</strong> Existem produtos com estoque baixo!</p>
+        <button class="btn btn-warning" (click)="irParaRelatorios()">
+          Ver Detalhes
+        </button>
+      </div>
     </div>
   </div>

@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProdutosService } from '../../services/produtos.services';
+import { RelatoriosService } from '../../services/relatorios.service';
 import { Produtos } from '../../models/produtos.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-produtos-form',
@@ -12,16 +14,18 @@ import { Produtos } from '../../models/produtos.model';
   templateUrl: './produtos-form.component.html',
   styleUrl: './produtos-form.component.css'
 })
-export class ProdutosFormComponent implements OnInit {
+export class ProdutosFormComponent implements OnInit, OnDestroy {
   produtoForm!: FormGroup;
   editando = false;
   produtoId?: number;
   carregando = false;
   erro = '';
+  private subscription = new Subscription();
 
   constructor(
     private fb: FormBuilder,
     private produtosService: ProdutosService,
+    private relatoriosService: RelatoriosService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -29,6 +33,10 @@ export class ProdutosFormComponent implements OnInit {
   ngOnInit(): void {
     this.inicializarFormulario();
     this.verificarSeEditando();
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   inicializarFormulario(): void {
@@ -52,17 +60,19 @@ export class ProdutosFormComponent implements OnInit {
 
   carregarProduto(id: number): void {
     this.carregando = true;
-    this.produtosService.getProduto(id).subscribe({
-      next: (produto) => {
-        this.produtoForm.patchValue(produto);
-        this.carregando = false;
-      },
-      error: (error) => {
-        this.erro = 'Erro ao carregar produto: ' + error.message;
-        this.carregando = false;
-        console.error('Erro:', error);
-      }
-    });
+    this.subscription.add(
+      this.produtosService.getProduto(id).subscribe({
+        next: (produto) => {
+          this.produtoForm.patchValue(produto);
+          this.carregando = false;
+        },
+        error: (error) => {
+          this.erro = 'Erro ao carregar produto: ' + error.message;
+          this.carregando = false;
+          console.error('Erro:', error);
+        }
+      })
+    );
   }
 
   onSubmit(): void {
@@ -72,34 +82,54 @@ export class ProdutosFormComponent implements OnInit {
 
       if (this.editando && this.produtoId) {
         // Atualizando produto existente
-        this.produtosService.atualizarProduto(this.produtoId, produtoData).subscribe({
-          next: () => {
-            alert('Produto atualizado com sucesso!');
-            this.router.navigate(['/produtos']);
-          },
-          error: (error) => {
-            this.erro = 'Erro ao atualizar produto: ' + error.message;
-            this.carregando = false;
-            console.error('Erro:', error);
-          }
-        });
+        this.subscription.add(
+          this.produtosService.atualizarProduto(this.produtoId, produtoData).subscribe({
+            next: () => {
+              alert('Produto atualizado com sucesso!');
+              this.router.navigate(['/produtos']);
+            },
+            error: (error) => {
+              this.erro = 'Erro ao atualizar produto: ' + error.message;
+              this.carregando = false;
+              console.error('Erro:', error);
+            }
+          })
+        );
       } else {
         // Criando novo produto
-        this.produtosService.criarProduto(produtoData).subscribe({
-          next: () => {
-            alert('Produto criado com sucesso!');
-            this.router.navigate(['/produtos']);
-          },
-          error: (error) => {
-            this.erro = 'Erro ao criar produto: ' + error.message;
-            this.carregando = false;
-            console.error('Erro:', error);
-          }
-        });
+        this.subscription.add(
+          this.produtosService.criarProduto(produtoData).subscribe({
+            next: () => {
+              alert('Produto criado com sucesso!');
+              // Atualiza os relatórios após criar um novo produto
+              this.atualizarRelatorios();
+              this.router.navigate(['/produtos']);
+            },
+            error: (error) => {
+              this.erro = 'Erro ao criar produto: ' + error.message;
+              this.carregando = false;
+              console.error('Erro:', error);
+            }
+          })
+        );
       }
     } else {
       this.marcarCamposInvalidos();
     }
+  }
+
+  atualizarRelatorios(): void {
+    // Atualiza os relatórios para refletir as mudanças
+    this.subscription.add(
+      this.relatoriosService.refreshRelatorios().subscribe({
+        next: () => {
+          console.log('Relatórios atualizados após criação de produto');
+        },
+        error: (error) => {
+          console.error('Erro ao atualizar relatórios:', error);
+        }
+      })
+    );
   }
 
   marcarCamposInvalidos(): void {

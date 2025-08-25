@@ -23,21 +23,26 @@ export class RelatoriosService {
       this.produtoRepo.count({ where: { ativo: false } }),
       this.produtoRepo
         .createQueryBuilder('produto')
-        .select('SUM(produto.estoque)', 'total')
+        .select('COALESCE(SUM(produto.estoque), 0)', 'total')
         .getRawOne(),
       this.produtoRepo
         .createQueryBuilder('produto')
-        .select('SUM(produto.estoque * produto.preco)', 'valorTotal')
+        .select('COALESCE(SUM(produto.estoque * produto.preco), 0)', 'valorTotal')
+        .where('produto.ativo = :ativo', { ativo: true })
         .getRawOne()
     ]);
+
+    const totalEstoqueNum = parseFloat(totalEstoque?.total || '0');
+    const valorTotalNum = parseFloat(valorTotalEstoque?.valorTotal || '0');
+    const percentualAtivos = totalProdutos > 0 ? ((produtosAtivos / totalProdutos) * 100).toFixed(1) : '0';
 
     return {
       totalProdutos,
       produtosAtivos,
       produtosInativos,
-      totalEstoque: totalEstoque?.total || 0,
-      valorTotalEstoque: parseFloat(valorTotalEstoque?.valorTotal || '0'),
-      percentualAtivos: totalProdutos > 0 ? ((produtosAtivos / totalProdutos) * 100).toFixed(1) : '0'
+      totalEstoque: totalEstoqueNum,
+      valorTotalEstoque: valorTotalNum,
+      percentualAtivos
     };
   }
 
@@ -62,14 +67,17 @@ export class RelatoriosService {
   async getProdutosPorPreco() {
     const [maisCaro, maisBarato, mediaPrecos] = await Promise.all([
       this.produtoRepo.findOne({
+        where: { ativo: true },
         order: { preco: 'DESC' }
       }),
       this.produtoRepo.findOne({
+        where: { ativo: true },
         order: { preco: 'ASC' }
       }),
       this.produtoRepo
         .createQueryBuilder('produto')
-        .select('AVG(produto.preco)', 'media')
+        .select('COALESCE(AVG(produto.preco), 0)', 'media')
+        .where('produto.ativo = :ativo', { ativo: true })
         .getRawOne()
     ]);
 
@@ -91,15 +99,14 @@ export class RelatoriosService {
   async getEstatisticasTemporais() {
     const hoje = new Date();
     const umMesAtras = new Date(hoje.getFullYear(), hoje.getMonth() - 1, hoje.getDate());
+    const umaSemanaAtras = new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     const [produtosUltimoMes, produtosUltimaSemana] = await Promise.all([
       this.produtoRepo.count({
         where: { dataCriacao: MoreThanOrEqual(umMesAtras) }
       }),
       this.produtoRepo.count({
-        where: { 
-          dataCriacao: MoreThanOrEqual(new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000))
-        }
+        where: { dataCriacao: MoreThanOrEqual(umaSemanaAtras) }
       })
     ]);
 
@@ -110,6 +117,24 @@ export class RelatoriosService {
         inicio: umMesAtras.toISOString().split('T')[0],
         fim: hoje.toISOString().split('T')[0]
       }
+    };
+  }
+
+  // Novo método para obter todos os relatórios de uma vez
+  async getAllRelatorios() {
+    const [resumo, estoque, preco, tempo] = await Promise.all([
+      this.getResumoGeral(),
+      this.getEstoqueBaixo(),
+      this.getProdutosPorPreco(),
+      this.getEstatisticasTemporais()
+    ]);
+
+    return {
+      resumoGeral: resumo,
+      estoqueBaixo: estoque,
+      produtosPorPreco: preco,
+      estatisticasTemporais: tempo,
+      timestamp: new Date().toISOString()
     };
   }
 }

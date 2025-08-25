@@ -3,8 +3,11 @@
   <div class="header">
     <h1>Relatórios do Sistema</h1>
     <div class="header-actions">
+      <button class="btn btn-primary" (click)="atualizarRelatorios()" [disabled]="carregando">
+        Atualizar
+      </button>
       <button class="btn btn-secondary" (click)="voltarParaDashboard()">
-        ← Voltar ao Dashboard
+        Voltar ao Dashboard
       </button>
     </div>
   </div>
@@ -43,12 +46,15 @@
         </div>
         <div class="stat-item">
           <div class="stat-value">{{ formatarMoeda(resumoGeral.valorTotalEstoque) }}</div>
-          <div class="stat-label">Valor Total</div>
+          <div class="stat-label">Valor Total (Ativos)</div>
         </div>
         <div class="stat-item">
           <div class="stat-value">{{ formatarPercentual(resumoGeral.percentualAtivos) }}</div>
           <div class="stat-label">% Ativos</div>
         </div>
+      </div>
+      <div *ngIf="!temProdutos" class="sem-dados">
+        <p>Nenhum produto cadastrado no sistema.</p>
       </div>
     </div>
 
@@ -60,7 +66,7 @@
           <span class="alert-count">{{ formatarNumero(estoqueBaixo.quantidade) }}</span>
           <span class="alert-text">produtos com estoque baixo</span>
         </div>
-        <div class="produtos-alerta" *ngIf="estoqueBaixo.produtos && estoqueBaixo.produtos.length > 0">
+        <div class="produtos-alerta" *ngIf="temEstoqueBaixo">
           <div class="produto-alerta" *ngFor="let produto of estoqueBaixo.produtos">
             <span class="produto-nome">{{ produto.nome }}</span>
             <span class="produto-estoque">{{ formatarNumero(produto.estoque) }}</span>
@@ -69,7 +75,7 @@
             </span>
           </div>
         </div>
-        <div *ngIf="!estoqueBaixo.produtos || estoqueBaixo.produtos.length === 0" class="sem-alertas">
+        <div *ngIf="!temEstoqueBaixo" class="sem-alertas">
           <p>Todos os produtos estão com estoque adequado!</p>
         </div>
       </div>
@@ -78,7 +84,7 @@
     <!-- Produtos por Preço -->
     <div class="relatorio-card produtos-preco">
       <h2>Análise de Preços</h2>
-      <div *ngIf="produtosPorPreco" class="preco-stats">
+      <div *ngIf="produtosPorPreco && temProdutos" class="preco-stats">
         <div class="preco-item">
           <h3>Mais Caro</h3>
           <div *ngIf="produtosPorPreco.maisCaro" class="produto-destaque">
@@ -86,7 +92,7 @@
             <div class="produto-preco">{{ formatarMoeda(produtosPorPreco.maisCaro.preco) }}</div>
           </div>
           <div *ngIf="!produtosPorPreco.maisCaro" class="sem-dados">
-            Nenhum produto cadastrado
+            Nenhum produto ativo
           </div>
         </div>
         <div class="preco-item">
@@ -96,7 +102,7 @@
             <div class="produto-preco">{{ formatarMoeda(produtosPorPreco.maisBarato.preco) }}</div>
           </div>
           <div *ngIf="!produtosPorPreco.maisBarato" class="sem-dados">
-            Nenhum produto cadastrado
+            Nenhum produto ativo
           </div>
         </div>
         <div class="preco-item">
@@ -105,6 +111,9 @@
             {{ formatarMoeda(produtosPorPreco.mediaPrecos) }}
           </div>
         </div>
+      </div>
+      <div *ngIf="!temProdutos" class="sem-dados">
+        <p>Nenhum produto cadastrado para análise de preços.</p>
       </div>
     </div>
 
@@ -123,6 +132,15 @@
         <div class="tempo-periodo" *ngIf="estatisticasTemporais.periodoAnalise">
           <small>Período: {{ estatisticasTemporais.periodoAnalise.inicio }} a {{ estatisticasTemporais.periodoAnalise.fim }}</small>
         </div>
+      </div>
+    </div>
+
+    <!-- Timestamp da última atualização -->
+    <div class="relatorio-card timestamp" *ngIf="timestampExiste">
+      <h2>Informações do Sistema</h2>
+      <div class="timestamp-info">
+        <p><strong>Última atualização:</strong> {{ getTimestampSeguro() | date:'dd/MM/yyyy HH:mm:ss' }}</p>
+        <p><strong>Status:</strong> <span class="status-ok">Sistema funcionando normalmente</span></p>
       </div>
     </div>
 

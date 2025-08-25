@@ -24,4 +24,9 @@ export class RelatoriosController {
   async getEstatisticasTemporais() {
     return await this.relatoriosService.getEstatisticasTemporais();
   }
+
+  @Get('todos')
+  async getAllRelatorios() {
+    return await this.relatoriosService.getAllRelatorios();
+  }
 }

@@ -20,6 +20,11 @@
   font-size: 2.5rem;
 }
 
+.header-actions {
+  display: flex;
+  gap: 15px;
+}
+
 .header-actions .btn {
   padding: 12px 24px;
   font-size: 1rem;
@@ -27,6 +32,22 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn-secondary {
@@ -270,6 +291,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  padding: 20px;
 }
 
 /* Estatísticas Temporais */
@@ -315,6 +338,26 @@
   font-size: 0.8rem;
 }
 
+/* Timestamp Card */
+.timestamp {
+  grid-column: 1 / -1;
+  min-height: auto;
+}
+
+.timestamp-info {
+  text-align: center;
+}
+
+.timestamp-info p {
+  margin: 10px 0;
+  color: #6c757d;
+}
+
+.status-ok {
+  color: #28a745;
+  font-weight: 500;
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
   .relatorios-container {
@@ -329,6 +372,15 @@
   
   .header h1 {
     font-size: 2rem;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .header-actions .btn {
+    width: 100%;
   }
   
   .relatorios-content {

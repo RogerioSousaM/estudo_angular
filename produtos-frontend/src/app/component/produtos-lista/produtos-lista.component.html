@@ -21,6 +21,36 @@
       <p>{{ erro }}</p>
     </div>
   
+    <!-- Resumo Rápido -->
+    <div *ngIf="!carregando && temProdutos" class="resumo-rapido">
+      <div class="resumo-item">
+        <span class="resumo-label">Total:</span>
+        <span class="resumo-value">{{ produtos.length }}</span>
+      </div>
+      <div class="resumo-item">
+        <span class="resumo-label">Ativos:</span>
+        <span class="resumo-value ativos">{{ produtosAtivos.length }}</span>
+      </div>
+      <div class="resumo-item">
+        <span class="resumo-label">Inativos:</span>
+        <span class="resumo-value inativos">{{ produtosInativos.length }}</span>
+      </div>
+      <div class="resumo-item">
+        <span class="resumo-label">Estoque Baixo:</span>
+        <span class="resumo-value estoque-baixo" [class.alert]="produtosEstoqueBaixo.length > 0">
+          {{ produtosEstoqueBaixo.length }}
+        </span>
+      </div>
+      <div class="resumo-item">
+        <span class="resumo-label">Total Estoque:</span>
+        <span class="resumo-value">{{ totalEstoque }}</span>
+      </div>
+      <div class="resumo-item">
+        <span class="resumo-label">Valor Total:</span>
+        <span class="resumo-value valor">{{ valorTotalEstoque | currency:'BRL' }}</span>
+      </div>
+    </div>
+  
     <!-- Tabela de Produtos -->
     <div *ngIf="!carregando && !erro" class="table-container">
       <table class="produtos-table">
@@ -29,14 +59,26 @@
             <th>ID</th>
             <th>Nome</th>
             <th>Preço</th>
+            <th>Estoque</th>
+            <th>Status</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let produto of produtos">
+          <tr *ngFor="let produto of produtos" [class.estoque-baixo]="getEstoqueSeguro(produto) < 5" [class.inativo]="!getAtivoSeguro(produto)">
             <td>{{ produto.id }}</td>
             <td>{{ produto.nome }}</td>
-            <td>{{ produto.preco | currency:'BRL' }}</td>
+            <td>{{ getPrecoSeguro(produto) | currency:'BRL' }}</td>
+            <td>
+              <span class="estoque-value" [class.baixo]="getEstoqueSeguro(produto) < 5">
+                {{ getEstoqueSeguro(produto) }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge" [class]="getAtivoSeguro(produto) ? 'ativo' : 'inativo'">
+                {{ getAtivoSeguro(produto) ? 'Ativo' : 'Inativo' }}
+              </span>
+            </td>
             <td class="acoes">
               <button class="btn btn-edit" (click)="editarProduto(produto.id!)">
                 Editar
@@ -50,7 +92,7 @@
       </table>
   
       <!-- Mensagem quando não há produtos -->
-      <div *ngIf="produtos.length === 0" class="no-products">
+      <div *ngIf="!temProdutos" class="no-products">
         <p>Nenhum produto cadastrado ainda.</p>
         <button class="btn btn-primary" (click)="novoProduto()">
           Cadastrar Primeiro Produto
