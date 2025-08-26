@@ -162,6 +162,21 @@ Temporary Items
 *.tmp
 *.temp
 
+# ===== ANGULAR SPECIFIC =====
+# Angular cache
+.angular/
+.sass-cache/
+connect.lock
+libpeerconnection.log
+testem.log
+typings/
+
+# ===== NESTJS SPECIFIC =====
+# NestJS build artifacts
+*.tsbuildinfo
+build/
+dist/
+
 # ===== MIGRATIONS (OPCIONAL) =====
 # Descomente se quiser ignorar as migrations
 # produtos-api/migrations/

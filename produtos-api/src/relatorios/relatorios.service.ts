@@ -27,7 +27,7 @@ export class RelatoriosService {
         .getRawOne(),
       this.produtoRepo
         .createQueryBuilder('produto')
-        .select('COALESCE(SUM(produto.estoque * produto.preco), 0)', 'valorTotal')
+        .select('COALESCE(SUM(produto.preco * produto.estoque), 0)', 'valorTotal')
         .where('produto.ativo = :ativo', { ativo: true })
         .getRawOne()
     ]);
